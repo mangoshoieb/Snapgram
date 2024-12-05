@@ -1,6 +1,6 @@
 import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
-import { ID, Query } from "appwrite";
+import { ID, ImageGravity, Query } from "appwrite";
 
 export async function createUserAccount(user: INewUser) {
   try {
@@ -30,7 +30,7 @@ export async function saveUserToDB(user: {
   accountId: string;
   email: string;
   name: string;
-  imageUrl: URL;
+  imageUrl: URL|string;
   username?: string;
 }) {
   try {
@@ -157,7 +157,7 @@ export function getFilePreview(fileId: string) {
       fileId,
       2000,
       2000,
-      "top",
+      "top" as ImageGravity,
       100
     );
 
@@ -244,7 +244,7 @@ export async function updatePost(post: IUpdatePost) {
 
   try {
     let image = {
-      imageUrl: post.imageUrl,
+      imageUrl: new URL(post.imageUrl),
       imageId: post.imageId,
     };
 
@@ -260,7 +260,7 @@ export async function updatePost(post: IUpdatePost) {
         throw Error;
       }
 
-      image = { ...image, imageUrl: fileUrl, imageId: uploadedFile.$id };
+      image = { ...image, imageUrl: new URL(fileUrl), imageId: uploadedFile.$id };
     }
 
     // Convert tags into array

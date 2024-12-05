@@ -24,12 +24,13 @@ import { useUserContext } from "@/context/AuthContext";
 import { ToastAction } from "@/components/ui/toast";
 
 const SignupForm = () => {
-  const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  // const { checkAuthUser, isLoading: isUserLoading } = useUserContext();
+  const { checkAuthUser } = useUserContext();
   const navigate = useNavigate();
   const { mutateAsync: createUserAccount, isPending: isCreatingAccount } =
     useCreateUserAccount();
-  const { mutateAsync: signInAccount, isPending: issigningIn } =
-    useSigninAccount();
+  // const { mutateAsync: signInAccount, isPending: issigningIn } = useSigninAccount();
+  const { mutateAsync: signInAccount} = useSigninAccount();
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof SignupValidation>>({

@@ -5,11 +5,12 @@ import { Link } from "react-router-dom";
 import PostStats from "./PostStats";
 type PostCardProps = {
   post: Models.Document;
-  action:'create' | 'update',
+  action?:'create' | 'update',
 };
 const PostCard = ({ post,action }: PostCardProps) => {
     const {user} = useUserContext();
     if(!post.creator) return;
+    console.log(action)
   return (
     <div className="post-card">
       <div className="flex-between">

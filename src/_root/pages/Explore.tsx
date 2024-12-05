@@ -7,15 +7,22 @@ import Loader from "@/components/shared/Loader";
 import SearchResult from "@/components/shared/SearchResult";
 import { Input } from "@/components/ui/input";
 import useDebounce from "@/hooks/useDebounce";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 const Explore = () => {
+  const {ref,inView}= useInView();
   const [searchValue, setSearchValue] = useState("");
+  // const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
   const { data: posts, fetchNextPage, hasNextPage } = useGetPosts();
   const debouncedResult = useDebounce(searchValue, 500);
   const { data: searchedPosts, isFetching: isSearchFetching } =
     useSearchPosts(debouncedResult);
-    
+  useEffect(() => {
+  if(inView && !searchValue) fetchNextPage()
+  }, [inView,searchValue])
+  
+
   if (!posts) {
     return (
       <div className="w-full h-full flex-center">
@@ -61,7 +68,7 @@ const Explore = () => {
       </div>
       <div className="flex flex-wrap gap-9 w-full max-w-5xl">
         {shouldShowSearchResult ? (
-          <SearchResult searchedPosts={searchedPosts} isSearchFetching={isSearchFetching}/>
+          <SearchResult searchedPosts={searchedPosts?.documents} isSearchFetching={isSearchFetching}/>
         ) : shouldShowPosts ? (
           <p className="mt-10 text-center w-full text-light-4">End of posts</p>
         ) : (
@@ -70,6 +77,11 @@ const Explore = () => {
           ))
         )}
       </div>
+      {hasNextPage && !searchValue &&(
+        <div className="mt-10 mb-5" ref={ref} >
+          <Loader/>
+        </div>
+      )}
     </div>
   );
 };
