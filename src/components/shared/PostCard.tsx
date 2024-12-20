@@ -17,13 +17,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateComment } from "../react-query/queriesAndMutations";
 import { useToast } from "@/hooks/use-toast";
-import Loader from "./Loader";
+
 type PostCardProps = {
   post: Models.Document;
   action?: "create" | "update";
 };
 const PostCard = ({ post, action }: PostCardProps) => {
-  const { mutateAsync: createComment, isPending: isCreateLoading } =
+  const { mutateAsync: createComment} =
     useCreateComment();
   const navigate = useNavigate();
   const { toast } = useToast();
