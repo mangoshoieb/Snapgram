@@ -178,7 +178,7 @@ const PostDetails = () => {
                         onClick={()=>handleDeleteComment(comment.$id)}
                         variant="ghost"
                         className={`ost_details-delete_btn ${
-                          user.id !== post?.creator.$id && "hidden"
+                          user.id == post?.creator.$id && "hidden"
                         }`}
                       >
                         <img
