@@ -1,17 +1,18 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 
-// import { GridPostList, PostStats } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import PostStats from "@/components/shared/PostStats";
 import {
   useGetPostById,
-  // useGetUserPosts,
+  useGetUserPosts,
   useDeletePost,
 } from "@/components/react-query/queriesAndMutations";
 
 import { multiFormatDateString } from "@/lib/utils";
 import { useUserContext } from "@/context/AuthContext";
 import Loader from "@/components/shared/Loader";
+import { Models } from "appwrite";
+import GridPostList from "@/components/shared/GridPostList";
 
 const PostDetails = () => {
   const navigate = useNavigate();
@@ -19,14 +20,16 @@ const PostDetails = () => {
   const { user } = useUserContext();
 
   const { data: post, isLoading } = useGetPostById(id);
-  // const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
-  //   post?.creator.$id
-  // );
+  console.log(post?.comments);
+  console.log(post?.tags);
+  const { data: userPosts, isLoading: isUserPostLoading } = useGetUserPosts(
+    post?.creator.$id
+  );
   const { mutate: deletePost } = useDeletePost();
 
-  // const relatedPosts = userPosts?.documents.filter(
-  //   (userPost) => userPost.$id !== id
-  // );
+  const relatedPosts = userPosts?.documents.filter(
+    (userPost) => userPost.$id !== id
+  );
 
   const handleDeletePost = () => {
     deletePost({ postId: id, imageId: post?.imageId });
@@ -93,7 +96,7 @@ const PostDetails = () => {
 
               <div className="flex-center gap-4">
                 <Link
-                  to={`/update-post/${post?.$id}`}
+                  to={`/edit-post/${post?.$id}`}
                   className={`${user.id !== post?.creator.$id && "hidden"}`}
                 >
                   <img
@@ -135,6 +138,43 @@ const PostDetails = () => {
                   </li>
                 ))}
               </ul>
+              <ul className="flex flex-col gap-2 mt-3 overflow-scroll custom-scrollbar max-w-xl max-h-60">
+                {post?.comments.map(
+                  (comment: Models.Document) => (
+                    <li key={comment.$id} className="flex flex-col gap-1 ">
+                      <div className="flex gap-3 items-center">
+                        <Link to={`/profile/${post.creator.$id}`}>
+                          <img
+                            src={
+                              comment.users?.imageUrl ||
+                              "/assets/icons/profile-placeholder.svg"
+                            }
+                            alt="creator"
+                            className="rounded-full w-12 lg:h-12"
+                          />
+                        </Link>
+                        <div className="flex flex-col">
+                          <p className="base-meduim lg:body-bold text-light-1">
+                            {comment.users?.name}
+                          </p>
+                          <div className="flex items-center text-light-3 gap-2">
+                            <p className="lg:small-regular subtle-semibold">
+                              {multiFormatDateString(comment.$createdAt)}
+                            </p>
+                            -
+                            <p className="lg:small-regular  subtle-semibold">
+                              {post.location}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-[17px] font-semibold">
+                           {comment.text}
+                      </div>
+                    </li>
+                  )
+                )}
+              </ul>
             </div>
 
             <div className="w-full">
@@ -144,7 +184,7 @@ const PostDetails = () => {
         </div>
       )}
 
-      {/* <div className="w-full max-w-5xl">
+      <div className="w-full max-w-5xl">
         <hr className="border w-full border-dark-4/80" />
 
         <h3 className="body-bold md:h3-bold w-full my-10">
@@ -155,7 +195,7 @@ const PostDetails = () => {
         ) : (
           <GridPostList posts={relatedPosts} />
         )}
-      </div> */}
+      </div>
     </div>
   );
 };

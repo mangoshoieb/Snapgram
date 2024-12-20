@@ -25,8 +25,14 @@ import {
   searchPosts,
   savePost,
   deleteSavedPost,
+  createComment,
+  isFollow,
+  follow,
+  unFollow,
+  followCount,
+  followedCount,
 } from "@/components/appwrite/api";
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
+import { INewComment, INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
 export const useCreateUserAccount = () => {
   return useMutation({
@@ -86,7 +92,55 @@ export const useCreatePost = () => {
     },
   });
 };
-
+export const useCreateComment = () =>{
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (comment:INewComment) => createComment(comment),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POSTS],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_POST_BY_ID],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+    },
+  })
+}
+export const useIsFollow = (userId:string,userFollowedId:string)=>{
+  return useQuery({
+    queryKey:[QUERY_KEYS.GET_POST_BY_ID, userId],
+    queryFn: ()=> isFollow(userId,userFollowedId),
+  });
+};
+export const useFollow = ()=> {
+  return useMutation({
+    mutationKey:[QUERY_KEYS.GET_POST_BY_ID],
+    mutationFn: ({ userId, userFollowedId }: { userId: string; userFollowedId: string })=> follow(userId,userFollowedId)
+  })
+}
+export const useUnFollow = ()=> {
+  return useMutation({
+    mutationKey:[QUERY_KEYS.GET_POST_BY_ID],
+    mutationFn: ({ userId, userFollowedId }: { userId: string; userFollowedId: string })=> unFollow(userId,userFollowedId)
+  })
+}
+export const useFollowCount = ({ userId }: { userId?: string }) => {
+  return useQuery({
+    queryKey: ['followCount', userId],
+    queryFn: () => followCount(userId),
+    enabled: !!userId, // Only run if userId is defined
+  });
+};
+export const useFollowedCount = ({ userId }: { userId?: string }) => {
+  return useQuery({
+    queryKey: ['followedCount', userId],
+    queryFn: () => followedCount(userId),
+    enabled: !!userId, // Only run if userId is defined
+  });
+};
 export const useGetPostById = (postId?: string) => {
   return useQuery({
     queryKey: [QUERY_KEYS.GET_POST_BY_ID, postId],

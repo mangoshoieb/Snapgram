@@ -114,7 +114,7 @@
 
   /* All Users */
   .user-container {
-    @apply max-w-5xl flex flex-col items-start w-full gap-6 md:gap-9;
+    @apply max-w-5xl flex flex-col items-start w-full  gap-6 md:gap-9;
   }
 
   .user-grid {
@@ -144,7 +144,7 @@
   }
 
   .home-creators {
-    @apply hidden xl:flex flex-col w-72 2xl:w-465 px-6 py-10 gap-10  overflow-scroll custom-scrollbar;
+    @apply hidden xl:flex flex-col w-[400px] bg-dark-2 2xl:w-465 px-6 py-10 gap-10  overflow-scroll custom-scrollbar;
   }
 
   /* Post Details */
@@ -242,7 +242,7 @@
 
   /* User card */
   .user-card {
-    @apply flex-center flex-col gap-4 border border-dark-4 rounded-[20px] px-5 py-8;
+    @apply flex-center flex-col gap-3 border border-dark-4 rounded-[20px] px-4 py-6;
   }
 }
 
@@ -259,6 +259,9 @@
 
   .shad-input {
     @apply h-12 bg-dark-4 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
+  }
+  .comment_input{
+    @apply h-12 bg-dark-4 border-none focus-visible:border-none !important;
   }
 
   .shad-textarea {

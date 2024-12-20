@@ -1,4 +1,10 @@
-import { INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
+import {
+  INewComment,
+  INewPost,
+  INewUser,
+  IUpdatePost,
+  IUpdateUser,
+} from "@/types";
 import { account, appwriteConfig, avatars, databases, storage } from "./config";
 import { ID, ImageGravity, Query } from "appwrite";
 
@@ -30,7 +36,7 @@ export async function saveUserToDB(user: {
   accountId: string;
   email: string;
   name: string;
-  imageUrl: URL|string;
+  imageUrl: URL | string;
   username?: string;
 }) {
   try {
@@ -46,14 +52,17 @@ export async function saveUserToDB(user: {
   }
 }
 export async function signInAccount(user: { email: string; password: string }) {
-    try {
-      const session = await account.createEmailPasswordSession(user.email, user.password);
-  
-      return session;
-    } catch (error) {
-      console.log(error);
-    }
+  try {
+    const session = await account.createEmailPasswordSession(
+      user.email,
+      user.password
+    );
+
+    return session;
+  } catch (error) {
+    console.log(error);
   }
+}
 export async function getAccount() {
   try {
     const currentAccount = await account.get();
@@ -85,13 +94,14 @@ export async function getCurrentUser() {
 }
 export async function signOutAccount() {
   try {
-    const session = await account.deleteSession('current')
+    const session = await account.deleteSession("current");
 
     return session;
   } catch (error) {
     console.log(error);
   }
-}export async function createPost(post: INewPost) {
+}
+export async function createPost(post: INewPost) {
   try {
     // Upload file to appwrite storage
     const uploadedFile = await uploadFile(post.file[0]);
@@ -133,7 +143,26 @@ export async function signOutAccount() {
     console.log(error);
   }
 }
-
+export async function createComment(comment: INewComment) {
+  try {
+    const newComment = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentCollectionId,
+      ID.unique(),
+      {
+        text: comment.text,
+        posts: comment.postId,
+        users: comment.userId,
+      }
+    );
+    if (!newComment) {
+      throw Error;
+    }
+    return newComment;
+  } catch (error) {
+    console.log(error);
+  }
+}
 // ============================== UPLOAD FILE
 export async function uploadFile(file: File) {
   try {
@@ -198,7 +227,7 @@ export async function searchPosts(searchTerm: string) {
 }
 
 export async function getInfinitePosts({ pageParam }: { pageParam: number }) {
-  const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(9)];
+  const queries: any[] = [Query.orderDesc("$updatedAt"), Query.limit(6)];
 
   if (pageParam) {
     queries.push(Query.cursorAfter(pageParam.toString()));
@@ -260,7 +289,11 @@ export async function updatePost(post: IUpdatePost) {
         throw Error;
       }
 
-      image = { ...image, imageUrl: new URL(fileUrl), imageId: uploadedFile.$id };
+      image = {
+        ...image,
+        imageUrl: new URL(fileUrl),
+        imageId: uploadedFile.$id,
+      };
     }
 
     // Convert tags into array
@@ -492,6 +525,7 @@ export async function updateUser(user: IUpdateUser) {
       {
         name: user.name,
         bio: user.bio,
+        username:user.username,
         imageUrl: image.imageUrl,
         imageId: image.imageId,
       }
@@ -515,5 +549,93 @@ export async function updateUser(user: IUpdateUser) {
     return updatedUser;
   } catch (error) {
     console.log(error);
+  }
+}
+// =============================== FOLLOW
+export async function isFollow(userId: string, userFollowedId: string) {
+  try {
+    const isfollowing = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      [
+        Query.equal("userId", userId),
+        Query.equal("userFollowedId", userFollowedId),
+      ]
+    );
+    if (isfollowing.total > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function follow(userId: string, userFollowedId: string) {
+  try {
+    const newfollow = await databases.createDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      ID.unique(),
+      {
+        userId: userId,
+        userFollowedId: userFollowedId,
+      }
+    );
+    if (!newfollow) throw Error;
+    return newfollow;
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function unFollow(userId: string, userFollowedId: string) {
+  try {
+    const followDoc = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      [
+        Query.equal("userId", userId),
+        Query.equal("userFollowedId", userFollowedId),
+      ]
+    );
+    if (followDoc.total > 0) {
+      const followId = followDoc.documents[0].$id;
+
+      await databases.deleteDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.followCollectionId,
+        followId
+      );
+
+      console.log("Unfollowed user");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function followCount(userId?:string){
+  if (!userId) return;
+  try {
+    const followingCount = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      [Query.equal('userId', userId)]
+    )
+    return followingCount.total
+  } catch (error) {
+    throw error;
+  }
+}
+export async function followedCount(userId?:string){
+  if (!userId) return;
+  try {
+    const followingCount = await databases.listDocuments(
+      appwriteConfig.databaseId,
+      appwriteConfig.followCollectionId,
+      [Query.equal('userFollowedId', userId)]
+    )
+    return followingCount.total
+  } catch (error) {
+    throw error;
   }
 }

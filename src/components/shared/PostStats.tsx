@@ -10,31 +10,34 @@ import {
   useGetCurrentUser,
 } from "../react-query/queriesAndMutations";
 import Loader from "./Loader";
+
 type PostStatsProps = {
-  post: Models.Document;
+  post: Models.Document | null | undefined; // Ensure post can be null or undefined
   userId: string;
 };
 
 const PostStats = ({ post, userId }: PostStatsProps) => {
   const location = useLocation();
-  const likesList = post.likes.map((user: Models.Document) => user.$id);
+
+  // Safely initialize likesList, falling back to an empty array if post or likes is undefined
+  const likesList = post?.likes?.map((user: Models.Document) => user.$id) || [];
 
   const [likes, setLikes] = useState<string[]>(likesList);
   const [isSaved, setIsSaved] = useState(false);
 
   const { mutate: likePost } = useLikePost();
-  const { mutate: savePost,isPending:isSavingPost } = useSavePost();
-  const { mutate: deleteSavePost,isPending:isDeletingSavedPost } = useDeleteSavedPost();
+  const { mutate: savePost, isPending: isSavingPost } = useSavePost();
+  const { mutate: deleteSavePost, isPending: isDeletingSavedPost } = useDeleteSavedPost();
 
   const { data: currentUser } = useGetCurrentUser();
 
   const savedPostRecord = currentUser?.save?.find(
-    (record: Models.Document) => record?.post?.$id === post.$id
-  )||null;
+    (record: Models.Document) => record?.post?.$id === post?.$id
+  ) || null;
 
   useEffect(() => {
     setIsSaved(!!savedPostRecord);
-  }, [currentUser]);
+  }, [currentUser, savedPostRecord]);
 
   const handleLikePost = (
     e: React.MouseEvent<HTMLImageElement, MouseEvent>
@@ -50,7 +53,9 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
     }
 
     setLikes(likesArray);
-    likePost({ postId: post.$id, likesArray });
+    if (post) {
+      likePost({ postId: post.$id, likesArray });
+    }
   };
 
   const handleSavePost = (
@@ -63,19 +68,25 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       return deleteSavePost(savedPostRecord.$id);
     }
 
-    savePost({ userId: userId, postId: post.$id });
-    setIsSaved(true);
+    if (post) {
+      savePost({ userId: userId, postId: post.$id });
+      setIsSaved(true);
+    }
   };
 
   const containerStyles = location.pathname.startsWith("/profile")
     ? "w-full"
     : "";
 
+  // Render nothing if the post is not defined
+  if (!post) {
+    return null;
+  }
+
   return (
     <div
       className={`flex justify-between items-center z-20 ${containerStyles}`}>
       <div className="flex gap-2 mr-5">
-        
         <img
           src={`${
             checkIsLiked(likes, userId)
@@ -92,15 +103,18 @@ const PostStats = ({ post, userId }: PostStatsProps) => {
       </div>
 
       <div className="flex gap-2">
-      {isSavingPost || isDeletingSavedPost ? <Loader/>:
-        <img
-          src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
-          alt="share"
-          width={20}
-          height={20}
-          className="cursor-pointer"
-          onClick={(e) => handleSavePost(e)}
-        />}
+        {isSavingPost || isDeletingSavedPost ? (
+          <Loader />
+        ) : (
+          <img
+            src={isSaved ? "/assets/icons/saved.svg" : "/assets/icons/save.svg"}
+            alt="share"
+            width={20}
+            height={20}
+            className="cursor-pointer"
+            onClick={(e) => handleSavePost(e)}
+          />
+        )}
       </div>
     </div>
   );

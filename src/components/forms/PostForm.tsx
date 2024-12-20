@@ -121,7 +121,14 @@ export default function PostForm({ post ,action }: PostFormProps) {
             <FormItem>
               <FormLabel className="shad-form_label">Add Location</FormLabel>
               <FormControl>
-                <Input type="text" className="shad-input" {...field} />
+              <div className="flex items-center bg-dark-4 rounded-xl px-3 hover:ring-1 hover:ring-offset-1 ring-offset-light-3">
+                <Input
+                  type="text"
+                  className="comment_input"
+                  {...field}
+                />
+                <img src="assets/icons/location.png" alt="location" className="w-6 h-6"/>
+                </div>
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
@@ -136,12 +143,15 @@ export default function PostForm({ post ,action }: PostFormProps) {
                 Add tags (Separated with comma " , ")
               </FormLabel>
               <FormControl>
+                <div className="flex items-center bg-dark-4 rounded-xl px-3 hover:ring-1 hover:ring-offset-1 ring-offset-light-3">
                 <Input
                   type="text"
-                  className="shad-input"
+                  className="comment_input"
                   placeholder="JS,React,Tailwind"
                   {...field}
                 />
+                <img src="assets/icons/tag.png" alt="location" className="w-6 h-6"/>
+                </div>
               </FormControl>
               <FormMessage className="shad-form_message" />
             </FormItem>
