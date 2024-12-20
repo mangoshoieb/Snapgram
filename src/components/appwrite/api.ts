@@ -355,6 +355,23 @@ export async function deletePost(postId?: string, imageId?: string) {
     console.log(error);
   }
 }
+export async function deleteComment(commentId?: string) {
+  if (!commentId) return;
+
+  try {
+    const statusCode = await databases.deleteDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.commentCollectionId,
+      commentId
+    );
+
+    if (!statusCode) throw Error;
+
+    return { status: "Ok" };
+  } catch (error) {
+    console.log(error);
+  }
+}
 
 // ============================== LIKE / UNLIKE POST
 export async function likePost(postId: string, likesArray: string[]) {

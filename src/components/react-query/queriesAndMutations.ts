@@ -31,6 +31,7 @@ import {
   unFollow,
   followCount,
   followedCount,
+  deleteComment,
 } from "@/components/appwrite/api";
 import { INewComment, INewPost, INewUser, IUpdatePost, IUpdateUser } from "@/types";
 
@@ -174,6 +175,18 @@ export const useDeletePost = () => {
   return useMutation({
     mutationFn: ({ postId, imageId }: { postId?: string; imageId: string }) =>
       deletePost(postId, imageId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_RECENT_POSTS],
+      });
+    },
+  });
+};
+export const useDeleteComment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ commentId}: { commentId?: string }) =>
+      deleteComment(commentId),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEYS.GET_RECENT_POSTS],

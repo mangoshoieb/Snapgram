@@ -6,6 +6,7 @@ import {
   useGetPostById,
   useGetUserPosts,
   useDeletePost,
+  useDeleteComment,
 } from "@/components/react-query/queriesAndMutations";
 
 import { multiFormatDateString } from "@/lib/utils";
@@ -26,13 +27,17 @@ const PostDetails = () => {
     post?.creator.$id
   );
   const { mutate: deletePost } = useDeletePost();
-
+  const { mutate: deleteComment } = useDeleteComment();
   const relatedPosts = userPosts?.documents.filter(
     (userPost) => userPost.$id !== id
   );
 
   const handleDeletePost = () => {
     deletePost({ postId: id, imageId: post?.imageId });
+    navigate(-1);
+  };
+  const handleDeleteComment = (commentId?:string) => {
+    deleteComment({ commentId: commentId });
     navigate(-1);
   };
 
@@ -139,9 +144,9 @@ const PostDetails = () => {
                 ))}
               </ul>
               <ul className="flex flex-col gap-2 mt-3 overflow-scroll custom-scrollbar max-w-xl max-h-60">
-                {post?.comments.map(
-                  (comment: Models.Document) => (
-                    <li key={comment.$id} className="flex flex-col gap-1 ">
+                {post?.comments.map((comment: Models.Document) => (
+                  <li key={comment.$id} className="flex flex-col gap-1 ">
+                    <div className="flex justify-between">
                       <div className="flex gap-3 items-center">
                         <Link to={`/profile/${post.creator.$id}`}>
                           <img
@@ -153,8 +158,9 @@ const PostDetails = () => {
                             className="rounded-full w-12 lg:h-12"
                           />
                         </Link>
+
                         <div className="flex flex-col">
-                          <p className="base-meduim lg:body-bold text-light-1">
+                          <p className="body-medium  text-light-1">
                             {comment.users?.name}
                           </p>
                           <div className="flex items-center text-light-3 gap-2">
@@ -168,12 +174,26 @@ const PostDetails = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="text-[17px] font-semibold">
-                           {comment.text}
-                      </div>
-                    </li>
-                  )
-                )}
+                      <Button
+                        onClick={()=>handleDeleteComment(comment.$id)}
+                        variant="ghost"
+                        className={`ost_details-delete_btn ${
+                          user.id !== post?.creator.$id && "hidden"
+                        }`}
+                      >
+                        <img
+                          src={"/assets/icons/delete.svg"}
+                          alt="delete"
+                          width={24}
+                          height={24}
+                        />
+                      </Button>
+                    </div>
+                    <div className="text-[15px] font-semibold my-2 pl-10">
+                      {comment.text}
+                    </div>
+                  </li>
+                ))}
               </ul>
             </div>
 
