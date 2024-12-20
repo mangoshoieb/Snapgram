@@ -103,7 +103,7 @@ const PostCard = ({ post, action }: PostCardProps) => {
       <Link to={`posts/${post.$id}`}>
         <div className="base-medium lg:body-medium py-5">
           <p>{post.caption}</p>
-          <ul className="flex gap-3 mt-2">
+          <ul className="flex gap-3 mt-2 w-full">
             {post.tags.map((tag: string) => (
               <li key={tag} className="text-light-3">
                 #{tag}
@@ -135,7 +135,7 @@ const PostCard = ({ post, action }: PostCardProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <div className="flex items-center bg-dark-4 rounded-xl px-3 hover:ring-1 hover:ring-offset-1 ring-offset-light-3">
+                    <div className="flex items-center w-full bg-dark-4 rounded-xl px-3 hover:ring-1 hover:ring-offset-1 ring-offset-light-3">
                       <Input
                         type="text"
                         className="comment_input"

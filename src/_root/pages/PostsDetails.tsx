@@ -40,7 +40,6 @@ const PostDetails = () => {
     deleteComment({ commentId: commentId });
     navigate(-1);
   };
-
   return (
     <div className="post_details-container">
       <div className="hidden md:flex max-w-5xl w-full">
@@ -133,7 +132,7 @@ const PostDetails = () => {
 
             <div className="flex flex-col flex-1 w-full small-medium lg:base-regular">
               <p>{post?.caption}</p>
-              <ul className="flex gap-1 mt-2">
+              <ul className="flex gap-1 mt-2 overflow-hidden">
                 {post?.tags.map((tag: string, index: string) => (
                   <li
                     key={`${tag}${index}`}
@@ -158,7 +157,7 @@ const PostDetails = () => {
                             className="rounded-full w-12 lg:h-12"
                           />
                         </Link>
-
+                            
                         <div className="flex flex-col">
                           <p className="body-medium  text-light-1">
                             {comment.users?.name}
@@ -178,7 +177,7 @@ const PostDetails = () => {
                         onClick={()=>handleDeleteComment(comment.$id)}
                         variant="ghost"
                         className={`ost_details-delete_btn ${
-                          user.id == post?.creator.$id && "hidden"
+                          user.id == post?.creator.$id||user.id == comment?.users.$id ?"block": "hidden"
                         }`}
                       >
                         <img

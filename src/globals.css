@@ -261,7 +261,7 @@
     @apply h-12 bg-dark-4 border-none placeholder:text-light-4 focus-visible:ring-1 focus-visible:ring-offset-1 ring-offset-light-3 !important;
   }
   .comment_input{
-    @apply h-12 bg-dark-4 border-none focus-visible:border-none !important;
+    @apply h-12 bg-dark-4 border-none w-full focus-visible:border-none !important;
   }
 
   .shad-textarea {
