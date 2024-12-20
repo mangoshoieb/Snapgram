@@ -13,16 +13,16 @@ const Home = () => {
   const { data: posts, isPending: isPostLoading } = useGetRecentPosts();
   const { data: creators, isPending: isCreatorLoading } = useGetUsers(6);
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 w-full">
       <div className="home-container">
         <div className="home-posts">
           <h3 className="h3-bold md:h2-bold text-left w-full">Home Feed</h3>
           {isPostLoading && !posts ? (
             <Loader />
           ) : (
-            <ul className="flex flex-col flex-1 gap-9 w-full">
+            <ul className="flex flex-col items-center justify-center gap-9 w-full">
               {posts?.documents.map((post: Models.Document) => (
-                <li>
+                <li className="w-full m-0">
                   <PostCard post={post} key={post.caption} />
                 </li>
               ))}

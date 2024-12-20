@@ -103,7 +103,7 @@ const PostCard = ({ post, action }: PostCardProps) => {
       <Link to={`posts/${post.$id}`}>
         <div className="base-medium lg:body-medium py-5">
           <p>{post.caption}</p>
-          <ul className="flex gap-3 mt-2 w-full">
+          <ul className="flex gap-3 mt-2 w-full overflow-hidden">
             {post.tags.map((tag: string) => (
               <li key={tag} className="text-light-3">
                 #{tag}
@@ -127,7 +127,7 @@ const PostCard = ({ post, action }: PostCardProps) => {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="flex flex-col w-full max-w-lg"
+            className="flex flex-col w-full "
           >
             <FormField
               control={form.control}
