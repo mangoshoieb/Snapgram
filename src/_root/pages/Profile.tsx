@@ -47,9 +47,6 @@ const Profile = () => {
   const { mutateAsync: follow, isPending: isFollowing } = useFollow();
   const { mutateAsync: unFollow, isPending: isUnFollowing } = useUnFollow();
   const { data: intialIsfollow } = useIsFollow(user.id, currentUser?.$id || "");
-  console.log("hi")
-  console.log(user.id)
-  console.log(currentUser?.$id)
   const [isFollow, setIsFollow] = useState(false);
   useEffect(() => {
     if (intialIsfollow !== undefined) {

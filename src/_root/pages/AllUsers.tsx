@@ -3,7 +3,7 @@ import UserCard from "@/components/shared/UserCard";
 import { Loader } from "lucide-react";
 
 const AllUsers = () => {
-  const { data: creators, isPending: isLoading } = useGetUsers(6);
+  const { data: creators, isPending: isLoading } = useGetUsers(12);
   const alluser=true;
   return (
     <div className="common-container">

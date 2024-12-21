@@ -11,7 +11,7 @@ import { Models } from "appwrite";
 const Home = () => {
   const {user}= useUserContext()
   const { data: posts, isPending: isPostLoading } = useGetRecentPosts();
-  const { data: creators, isPending: isCreatorLoading } = useGetUsers(6);
+  const { data: creators, isPending: isCreatorLoading } = useGetUsers(20);
   return (
     <div className="flex flex-1 w-full">
       <div className="home-container">
